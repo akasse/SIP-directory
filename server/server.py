@@ -16,6 +16,7 @@
 # import os
 import socket
 import _thread
+# import simplejson
 # import re
 
 
@@ -35,6 +36,18 @@ class SIPdirectorySrv:
 
         # TODO : Load data
 
+    def loadSIPdataDirectory(self, datafile="../data/regs"):
+        """ Load regs information """
+        print(50 * "=")
+        line_num = 1
+        for line in open(datafile).readlines():
+            print(line_num)
+            print(50 * "+")
+            print(line)
+            print(50 * "+")
+            entry = (eval(line))
+            line_num += 1
+
     def processConnection(self, clientsocket, clientaddr):
         """ TODO processConnection doc """
         print("Accepted connection from: ", clientaddr)
@@ -51,7 +64,6 @@ class SIPdirectorySrv:
                 clientsocket, clientaddr = self.serversocket.accept()
                 _thread.start_new_thread(
                     self.processConnection, (clientsocket, clientaddr))
-            # Ctrl+C # FIXME: vraci "raise error(EBADF, 'Bad file descriptor')"
             except KeyboardInterrupt:
                 print("Closing server socket...")
                 break
@@ -66,4 +78,5 @@ class SIPdirectorySrv:
 if __name__ == '__main__':
 
         sipdir = SIPdirectorySrv()
-        sipdir.AcceptConnection()
+        sipdir.loadSIPdataDirectory()
+#        sipdir.AcceptConnection()
