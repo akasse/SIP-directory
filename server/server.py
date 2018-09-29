@@ -16,7 +16,7 @@
 # import os
 import socket
 import _thread
-# import simplejson
+import json
 # import re
 
 
@@ -34,23 +34,42 @@ class SIPdirectorySrv:
         # bind the socket to a public host, and a well-known port
         self.serversocket.bind((socketIP, socketPort))
 
+        self.dic_sipData = {}
+
         # TODO : Load data
 
     def loadSIPdataDirectory(self, datafile="../data/regs"):
         """ Load regs information """
-        print(50 * "=")
+
+        # TODO ajout try
         line_num = 1
         for line in open(datafile).readlines():
-            print(line_num)
-            print(50 * "+")
-            print(line)
-            print(50 * "+")
-            entry = (eval(line))
+            entry = json.loads(line)
+            self.dic_sipData[entry['addressOfRecord']] = entry
             line_num += 1
+
+        print("System loaded : " + str(line_num - 1) + " entry")
 
     def processConnection(self, clientsocket, clientaddr):
         """ TODO processConnection doc """
         print("Accepted connection from: ", clientaddr)
+        while True:
+            data = clientsocket.recv(1024)
+
+            if data == "bye\n" or not data:
+                break
+#            elif data.startswith("jpg_"): # jpg_/tmp/fotka.jpg
+            elif data:
+                dataProcessed = False
+
+                dataProcessed = True
+                print(data)
+                if dataProcessed is False:
+                    print("bad CMD recieved :", str(data))
+                    clientsocket.send(
+                        bytes("Srv : Not processing, BAD CMD", 'utf8'))
+
+        clientsocket.close()
 
     def AcceptConnection(self, maxQueueConn=5):
         """ TODO """
@@ -79,4 +98,4 @@ if __name__ == '__main__':
 
         sipdir = SIPdirectorySrv()
         sipdir.loadSIPdataDirectory()
-#        sipdir.AcceptConnection()
+        sipdir.AcceptConnection()
