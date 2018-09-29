@@ -17,6 +17,7 @@
 import socket
 import _thread
 import json
+from struct import *
 # import re
 
 
@@ -25,7 +26,7 @@ class SIPdirectorySrv:
     TODO: doc
     """
 
-    def __init__(self, socketIP=socket.gethostname(), socketPort=1234):
+    def __init__(self, socketIP=socket.gethostname(), socketPort=1235):
         """ TODO """
 
         # TODO : Add socketIP and socketPort
@@ -53,23 +54,37 @@ class SIPdirectorySrv:
     def processConnection(self, clientsocket, clientaddr):
         """ TODO processConnection doc """
         print("Accepted connection from: ", clientaddr)
+
+        # Loop information recieved from client
         while True:
             data = clientsocket.recv(1024)
 
             if data == "bye\n" or not data:
                 break
-#            elif data.startswith("jpg_"): # jpg_/tmp/fotka.jpg
             elif data:
                 dataProcessed = False
+                # TODO process with data validation
 
                 dataProcessed = True
-                print(data)
+                info = self.SearchEntry(data.decode('ascii').strip())
+                print("Client requested : " + data.decode('ascii').strip())
+                print(" Answer : ")
+                print(info)
+                self.send_sock_msg(clientsocket, bytes(
+                                    str(info), 'utf8'))
                 if dataProcessed is False:
                     print("bad CMD recieved :", str(data))
                     clientsocket.send(
                         bytes("Srv : Not processing, BAD CMD", 'utf8'))
 
         clientsocket.close()
+
+    def SearchEntry(self, aor):
+        """ TODO """
+        try:
+            return self.dic_sipData[aor]
+        except KeyError:
+            return ""
 
     def AcceptConnection(self, maxQueueConn=5):
         """ TODO """
@@ -87,6 +102,13 @@ class SIPdirectorySrv:
                 print("Closing server socket...")
                 break
 
+    def send_sock_msg(self, sock, message):
+        """ TODO doc send_sock_msg """
+        # Prefix each message with a 4-byte length (network byte order)
+        message = pack('>I', len(message)) + message
+        sock.sendall(message)
+
+
 # END class SIPdirectorySrv:
 
 
@@ -96,6 +118,6 @@ class SIPdirectorySrv:
 
 if __name__ == '__main__':
 
-        sipdir = SIPdirectorySrv()
+        sipdir = SIPdirectorySrv("127.0.0.1", 1234)
         sipdir.loadSIPdataDirectory()
         sipdir.AcceptConnection()
