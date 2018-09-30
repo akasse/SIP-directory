@@ -35,8 +35,8 @@ class ValisationServerSip(unittest.TestCase):
     def request_aor(self, aor):
         # This is our fake test client that is just going to attempt a connect and disconnect
         fake_client = socket.socket()
-        fake_client.settimeout(1)
-        fake_client.connect(('127.0.0.1', 1234))
+        fake_client.settimeout(2)       # Short timeout for testing
+        fake_client.connect(('127.0.0.1', 1235))
 
         fake_client.send(bytes(aor, 'utf-8'))
         data = fake_client.recv(1024)
@@ -47,8 +47,8 @@ class ValisationServerSip(unittest.TestCase):
 
         # This is our fake test client that is just going to attempt a connect and disconnect
         fake_client = socket.socket()
-        fake_client.settimeout(1)
-        fake_client.connect(('127.0.0.1', 1234))
+        fake_client.settimeout(1)         # Short timeout for testing
+        fake_client.connect(('127.0.0.1', 1235))
 
         # TODO check
         # self.sipSrv.closeServer()
@@ -67,8 +67,8 @@ class ValisationServerSip(unittest.TestCase):
     def test_04_RequestAOR_3_time(self):
         """ Request an AOR """
         fake_client = socket.socket()
-        fake_client.settimeout(1)
-        fake_client.connect(('127.0.0.1', 1234))
+        fake_client.settimeout(5)
+        fake_client.connect(('127.0.0.1', 1235))
 
         fake_client.send(bytes('0142e2fa3543cb32bf000100620002', 'utf-8'))
         data = fake_client.recv(1024)
@@ -83,6 +83,10 @@ class ValisationServerSip(unittest.TestCase):
         assert("0148c1f489badb837d000100620002" in data.decode('ascii'))
 
         fake_client.close()
+
+    def test_05_timeout_10_sec(self):
+        """ TODO """
+        print("Need to be done issue #5")
 
     def tearDown(self):
         # Make sure server thread finishes
