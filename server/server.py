@@ -25,7 +25,7 @@ class SIPdirectorySrv:
     TODO: doc
     """
 
-    def __init__(self, socketIP=socket.gethostname(), socketPort=1235):
+    def __init__(self, socketIP=socket.gethostname(), socketPort=1234):
         """ TODO """
 
         # TODO : Add socketIP and socketPort
@@ -83,7 +83,7 @@ class SIPdirectorySrv:
         try:
             return self.dic_sipData[aor]
         except KeyError:
-            return ""
+            return "\n"
 
     def AcceptConnection(self, maxQueueConn=5):
         """ TODO """
@@ -120,6 +120,6 @@ class SIPdirectorySrv:
 
 if __name__ == '__main__':
 
-        sipdir = SIPdirectorySrv("127.0.0.1", 1235)
-        sipdir.loadSIPdataDirectory()
+        sipdir = SIPdirectorySrv("127.0.0.1", 1234)
+        sipdir.loadSIPdataDirectory('data/regs')
         sipdir.AcceptConnection()
