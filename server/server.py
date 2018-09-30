@@ -34,6 +34,7 @@ class SIPdirectorySrv:
         # bind the socket to a public host, and a well-known port
         self.serversocket.bind((socketIP, socketPort))
 
+        self.enable = True
         self.dic_sipData = {}
 
         # TODO : Load data
@@ -82,13 +83,13 @@ class SIPdirectorySrv:
         try:
             return self.dic_sipData[aor]
         except KeyError:
-            return ""
+            return "\n"
 
     def AcceptConnection(self, maxQueueConn=5):
         """ TODO """
 
         # become a server socket
-        self.serversocket.listen(5)
+        self.serversocket.listen(maxQueueConn)
 
         while True:
             try:
@@ -96,11 +97,19 @@ class SIPdirectorySrv:
                 clientsocket, clientaddr = self.serversocket.accept()
                 _thread.start_new_thread(
                     self.processConnection, (clientsocket, clientaddr))
+                if self.enable is False:
+                    break
             except KeyboardInterrupt:
                 print("Closing server socket...")
                 break
         self.serversocket.close()
 
+    def closeServer(self):
+        """ """
+        print("Closing server socket...")
+        self.enable = False
+        # self.serversocket.shutdown(1)
+        self.serversocket.close()
 
 # END class SIPdirectorySrv:
 
@@ -112,5 +121,5 @@ class SIPdirectorySrv:
 if __name__ == '__main__':
 
         sipdir = SIPdirectorySrv("127.0.0.1", 1235)
-        sipdir.loadSIPdataDirectory()
+        sipdir.loadSIPdataDirectory('data/regs')
         sipdir.AcceptConnection()
