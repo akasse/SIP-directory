@@ -12,7 +12,7 @@
 # Modules #
 
 import argparse                                    # Process command line argument
-# import sys
+import sys
 # import os
 import socket
 import _thread
@@ -41,15 +41,20 @@ class SIPdirectorySrv:
 
     def loadSIPdataDirectory(self, datafile="../data/regs"):
         """ Load regs information """
+        try:
+            # TODO ajout try
+            line_num = 1
+            for line in open(datafile).readlines():
+                entry = json.loads(line)
+                self.dic_sipData[entry['addressOfRecord']] = entry
+                line_num += 1
 
-        # TODO ajout try
-        line_num = 1
-        for line in open(datafile).readlines():
-            entry = json.loads(line)
-            self.dic_sipData[entry['addressOfRecord']] = entry
-            line_num += 1
+            print("System loaded : " + str(line_num - 1) + " entry")
+        except FileNotFoundError:
+            print("file not found :" + datafile + ":")
+            return False
 
-        print("System loaded : " + str(line_num - 1) + " entry")
+        return True
 
     def processConnection(self, clientsocket, clientaddr):
         """ TODO processConnection doc """
@@ -132,5 +137,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     sipdir = SIPdirectorySrv(args.ip, args.port)
-    sipdir.loadSIPdataDirectory(args.data)
+    if sipdir.loadSIPdataDirectory(args.data) is False:
+        print("ERROR : unable to load " + args.data)
+        sys.exit(1)
     sipdir.AcceptConnection()
