@@ -11,7 +11,7 @@
 ###########
 # Modules #
 
-# import argparse                                    # Process command line argument
+import argparse                                    # Process command line argument
 # import sys
 # import os
 import socket
@@ -120,6 +120,17 @@ class SIPdirectorySrv:
 
 if __name__ == '__main__':
 
-        sipdir = SIPdirectorySrv("127.0.0.1", 1235)
-        sipdir.loadSIPdataDirectory('data/regs')
-        sipdir.AcceptConnection()
+    # #######################
+    # Command Line Arguments
+    parser = argparse.ArgumentParser(description='SIP directory ')
+    parser.add_argument('--data', '-d', help='SIP AOR the load ', default="../data/regs")
+    parser.add_argument('--ip', '-i', help='define ip to bind service ', default="127.0.0.1")
+    parser.add_argument('--log', '-l', help='define log file', default="./srv-SIP.log")
+    parser.add_argument('--port', '-p', type=int, help='define port for tcp listening', default=1234)
+    parser.add_argument('--verbose', '-v', action='store_true', help='Unable Verbose mode', default=False)
+
+    args = parser.parse_args()
+
+    sipdir = SIPdirectorySrv(args.ip, args.port)
+    sipdir.loadSIPdataDirectory(args.data)
+    sipdir.AcceptConnection()
