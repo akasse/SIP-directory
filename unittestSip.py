@@ -36,8 +36,8 @@ class ValisationServerSip(unittest.TestCase):
     def setUp(self):
         # TODO add comment
 
-        self.cmdOs_startSrv = Popen(['python', 'server/server.py', '-i', self.bind_ip,
-                                    '-p', str(self.bind_port), '-d', self.data_to_load])
+        self.cmdOs_startSrv = Popen(['python', 'server/server.py', '-i', self.bind_ip, '-l', './logfile',
+                                    '-p', str(self.bind_port), '-d', self.data_to_load, '-v'])
         time.sleep(1)
 
     def request_aor(self, aor):
