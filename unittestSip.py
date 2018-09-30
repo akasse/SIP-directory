@@ -26,17 +26,25 @@ from subprocess import Popen
 
 class ValisationServerSip(unittest.TestCase):
     """ """
+
+    ########
+    # Vars #
+    bind_ip = '127.0.0.1'
+    bind_port = 1234
+    data_to_load = './data/regs'
+
     def setUp(self):
         # TODO add comment
 
-        self.cmdOs_startSrv = Popen(['python', 'server/server.py'])
+        self.cmdOs_startSrv = Popen(['python', 'server/server.py', '-i', self.bind_ip, '-l', './logfile',
+                                    '-p', str(self.bind_port), '-d', self.data_to_load, '-v'])
         time.sleep(1)
 
     def request_aor(self, aor):
         # This is our fake test client that is just going to attempt a connect and disconnect
         fake_client = socket.socket()
         fake_client.settimeout(2)       # Short timeout for testing
-        fake_client.connect(('127.0.0.1', 1235))
+        fake_client.connect((self.bind_ip, self.bind_port))
 
         fake_client.send(bytes(aor, 'utf-8'))
         data = fake_client.recv(1024)
@@ -48,7 +56,7 @@ class ValisationServerSip(unittest.TestCase):
         # This is our fake test client that is just going to attempt a connect and disconnect
         fake_client = socket.socket()
         fake_client.settimeout(1)         # Short timeout for testing
-        fake_client.connect(('127.0.0.1', 1235))
+        fake_client.connect((self.bind_ip, self.bind_port))
 
         # TODO check
         # self.sipSrv.closeServer()
@@ -68,7 +76,7 @@ class ValisationServerSip(unittest.TestCase):
         """ Request an AOR """
         fake_client = socket.socket()
         fake_client.settimeout(5)
-        fake_client.connect(('127.0.0.1', 1235))
+        fake_client.connect((self.bind_ip, self.bind_port))
 
         fake_client.send(bytes('0142e2fa3543cb32bf000100620002', 'utf-8'))
         data = fake_client.recv(1024)
