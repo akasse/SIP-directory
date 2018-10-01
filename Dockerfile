@@ -10,6 +10,7 @@ ENV DATA /usr/local/app/data/regs
 
 COPY ./data/regs /usr/local/app/data
 COPY ./server/server.py /usr/local/app/
+COPY ./unittestSip.py /usr/local/app/
 
 WORKDIR /usr/local/app/
 
