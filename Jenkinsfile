@@ -7,7 +7,7 @@ pipeline {
                 steps {
                     /* use unittest */
                     script {
-                       sh 'python unittest.py'
+                       sh 'python unittestSip.py'
                     }
                 }
             }
