@@ -129,6 +129,10 @@ INFO: 2018-09-30 20:42:46,836 hoshi X3:server.py[29922]: (xerus) msg: Answer :
 INFO: 2018-09-30 20:42:46,836 hoshi X3:server.py[29922]: (xerus) msg:{'addressOfRecord': '0142e2fa3543cb32bf000100620002', 'tenantId': '0127d974-f9f3-0704-2dee-000100420001', 'uri': 'sip:0142e2fa3543cb32bf000100620002@109.149.135.172;jbcuser=cpe70', 'contact': '<sip:0142e2fa3543cb32bf000100620002@207.169.118.8;jbcuser=cpe70>;methods="INVITE, ACK, BYE, CANCEL, OPTIONS, INFO, MESSAGE, SUBSCRIBE, NOTIFY, PRACK, UPDATE, REFER"', 'path': ['<sip:Mi0xOTkuMTkyLjE2NS4xOTQtMTk2MjI@8.63.250.250:5060;lr>'], 'source': '29.211.204.173:19622', 'target': '60.124.57.147:5061', 'userAgent': 'polycom.vvx.600', 'rawUserAgent': 'PolycomVVX-VVX_600-UA/132.244.41.145', 'created': '2016-12-12T22:40:40.764Z', 'lineId': '013db2ba-2175-6d29-6157-000100620002'}
 ```
 
+# Jenkins 
+
+You have the jenkins pipeline available , actually the docker registry use is my personnal repository , change it to your docker registry
+
 # Licence
 
 Application in GPL v3 , complete licence available [LICENCE](./LICENCE)
