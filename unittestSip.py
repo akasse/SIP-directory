@@ -11,9 +11,11 @@
 ###########
 # Modules #
 
+import argparse                     # command line Args
 import time                         # Add some sleep in the code
 import socket                       # socket client
 from subprocess import Popen        # Start Server application
+import sys                          # to exit with good code
 import unittest                     # Base unit class
 # import threading                  # Originaly try to start server without success
 
@@ -23,8 +25,32 @@ import unittest                     # Base unit class
 #############
 # Classe    #
 
+# Create Class to be able to pass parameters
+class ParametrizedTestCase(unittest.TestCase):
+    """ TestCase classes that want to be parametrized should
+        inherit from this class.
+        Source : https://eli.thegreenplace.net/2011/08/02/python-unit-testing-parametrized-test-cases/
+        Author : Eli Bendersky
+    """
+    def __init__(self, methodName='runTest', dic_param=None):
+        super(ParametrizedTestCase, self).__init__(methodName)
+        self.dic_param = dic_param
 
-class ValisationServerSip(unittest.TestCase):
+    @staticmethod
+    def parametrize(testcase_klass, dic_param=None):
+        """ Create a suite containing all tests taken from the given
+            subclass, passing them the parameter 'dic_param'.
+        """
+        testloader = unittest.TestLoader()
+        testnames = testloader.getTestCaseNames(testcase_klass)
+        suite = unittest.TestSuite()
+        for name in testnames:
+            suite.addTest(testcase_klass(name, dic_param=dic_param))
+        return suite
+# END class ParametrizedTestCase
+
+
+class ValisationServerSip(ParametrizedTestCase):
     """ Unittest to validate SIPdirectorySrv
     Unit test is self content , start server and performe validation
     """
@@ -40,14 +66,15 @@ class ValisationServerSip(unittest.TestCase):
         is initialise , argumente to use logfile
         """
 
-        # I start a process , Originaly I tried to use python class to start server , I had issue
-        # to stop the thread in the teardown method , server continue listen indefinitly
-        # Because I'm short of time I switch method to go forward , ticket #10 open for that
-        self.cmdOs_startSrv = Popen(['python', 'server/server.py', '-i', self.bind_ip, '-l', './logfile',
-                                    '-p', str(self.bind_port), '-d', self.data_to_load, '-v'])
+        if self.dic_param['docker'] is False:
+            # I start a process , Originaly I tried to use python class to start server , I had issue
+            # to stop the thread in the teardown method , server continue listen indefinitly
+            # Because I'm short of time I switch method to go forward , ticket #10 open for that
+            self.cmdOs_startSrv = Popen(['python3', 'server/server.py', '-i', self.bind_ip, '-l', './logfile',
+                                        '-p', str(self.bind_port), '-d', self.data_to_load, '-v'])
 
-        # Wait for initialisation
-        time.sleep(1)
+            # Wait for initialisation
+            time.sleep(1)
 
     def request_aor(self, aor):
         """ Method for a single AOR request
@@ -125,19 +152,35 @@ class ValisationServerSip(unittest.TestCase):
 
     def tearDown(self):
         """ Close server after test , as mention threading was not a success so I kill the server """
-        # Send terminate signal to the server process
-        self.cmdOs_startSrv.kill()
 
-        # wait a little bit and validate process ended
-        time.sleep(1)
+        if self.dic_param['docker'] is False:
+            # Send terminate signal to the server process
+            self.cmdOs_startSrv.kill()
 
-        # Information if the process still running
-        self.cmdOs_startSrv.poll()
+            # wait a little bit and validate process ended
+            time.sleep(1)
+
+            # Information if the process still running
+            self.cmdOs_startSrv.poll()
 
 #########
 # Main  #
 
 
 if __name__ == '__main__':
-    # Verbosity to 9 to view each test Status
-    unittest.main(verbosity=9)
+
+    # #######################
+    # Command Line Arguments
+    parser = argparse.ArgumentParser(description='unittest to validate app')
+    parser.add_argument('--docker', '-d', action='store_true', help='Unittest in docker so server already started',
+                        default=False)
+    args = parser.parse_args()
+
+    # Feed a dictionnary with all parameters give option for future parameters
+    dic_testParam = {'docker': args.docker}
+
+    suite = unittest.TestSuite()
+    suite.addTest(ParametrizedTestCase.parametrize(ValisationServerSip, dic_testParam))
+    return_code = unittest.TextTestRunner(verbosity=9).run(suite)
+    if return_code.wasSuccessful() is False:
+        sys.exit(9)
