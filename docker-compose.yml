@@ -1,0 +1,16 @@
+version: '2'
+services:
+    x3-nef:
+        image: sip-directory-srv
+        build: .
+        container_name : 'x3-sip-dir-srv'
+        restart : unless-stopped
+        environment:
+            - TERM=xterm
+            - TZ=America/Montreal
+            - SRV_IP=0.0.0.0
+            - SRV_PORT=1236
+            - DATA=/usr/local/app/data/regs
+        ports :
+            - 1236:1236
+ 
