@@ -15,3 +15,4 @@ WORKDIR /usr/local/app/
 
 CMD python /usr/local/app/server.py --data $DATA --ip $SRV_IP --port $SRV_PORT -v
 
+EXPOSE 1234
