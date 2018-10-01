@@ -30,11 +30,12 @@ pipeline {
             stage('Test image from inside') {
                 steps {
                     /* Ideally, we would run the unittest outside the img , but need identify
-                       dynamic ip Address. It will be in the next step issue #  */
+                       dynamic ip Address. It will be in the next step issue #17
+                       When jenkins Start the container, CMD process is not started */
 
                     script {
                         app.inside {
-                            sh 'python3 /usr/local/app/unittestSip.py --docker '
+                            sh 'python3 /usr/local/app/unittestSip.py '
                         }
                     }
                 }
