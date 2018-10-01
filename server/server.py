@@ -131,6 +131,9 @@ class SIPdirectorySrv:
 
             # Log number of line loaded
             logging.info("System loaded : " + str(line_num - 1) + " entry")
+        except json.decoder.JSONDecodeError:
+            logging.error("Issue when loading Json file at line : " + str(line_num - 1))
+            return False
         except FileNotFoundError:
             return False
 
