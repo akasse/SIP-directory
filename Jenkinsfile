@@ -1,5 +1,5 @@
 
-// Variable
+// Variable ; don't seem working with docker.build
 def dockerName='repo.x3rus.com/xerus/x3-sip-dir-srv'
 
 def app
@@ -23,7 +23,7 @@ pipeline {
                     /* This builds the actual image; synonymous to
                      * docker build on the command line */
                     script {
-                        app = docker.build(${dockerName})
+                        app = docker.build('repo.x3rus.com/xerus/x3-sip-dir-srv')
                     }
                 }
             }
