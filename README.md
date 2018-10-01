@@ -20,6 +20,8 @@ The client may send as many requests as it wants, one after the other.  If a TCP
 
 # Usage
 
+## Native usage 
+
 How to use the application list of option available : 
 
 ```
@@ -48,6 +50,25 @@ INFO: 2018-09-30 20:40:29,226 hoshi X3:server.py[28487]: (xerus) msg:System load
 INFO: 2018-09-30 20:40:29,226 hoshi X3:server.py[28487]: (xerus) msg:Server is listening for connections
 
 ```
+
+## With Docker
+
+Pull the image 
+
+```bash
+$ docker pull x3rus/sip-directory
+$ docker run x3rus/sip-directory 
+```
+
+You can use the docker-compose , build and and
+
+```
+$ docker-compose build
+$ docker-compose up -d 
+```
+
+
+## Client validation
 
 Testing it with telnet 
 
