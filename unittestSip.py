@@ -43,7 +43,7 @@ class ValisationServerSip(unittest.TestCase):
         # I start a process , Originaly I tried to use python class to start server , I had issue
         # to stop the thread in the teardown method , server continue listen indefinitly
         # Because I'm short of time I switch method to go forward , ticket #10 open for that
-        self.cmdOs_startSrv = Popen(['python', 'server/server.py', '-i', self.bind_ip, '-l', './logfile',
+        self.cmdOs_startSrv = Popen(['python3', 'server/server.py', '-i', self.bind_ip, '-l', './logfile',
                                     '-p', str(self.bind_port), '-d', self.data_to_load, '-v'])
 
         # Wait for initialisation
