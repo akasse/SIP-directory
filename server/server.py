@@ -13,13 +13,13 @@
 # Modules #
 
 import argparse                                    # Process command line argument
-import sys                                         # For return code
+import getpass                                     # get user name running script
+import json                                        # Load data file with json format
 import logging                                     # Have a unified logging format
 import os                                          # for logs informations
 import socket                                      # Socket librairy for tcp connexion
-import getpass                                     # get user name running script
+import sys                                         # For return code
 import _thread                                     # Threading Client connexion
-import json                                        # Load data file with json format
 
 
 def setLogging(level=logging.WARNING, log_filename=None):
@@ -78,6 +78,40 @@ class SIPdirectorySrv:
 
         # Dictionnary of json data , initialisation
         self.dic_sipData = {}
+
+    def AcceptConnection(self, maxQueueConn=5):
+        """ Listen and wait connexion
+        Arguments:
+            maxQueueConn : Max connexion to queue
+        """
+
+        # become a server socket
+        self.serversocket.listen(maxQueueConn)
+
+        # Loop for every connexion and start thread to manage connexion
+        while True:
+            try:
+                # Log change server status
+                logging.info("Server is listening for connections\n")
+
+                # Accept connexion and start a thread to manage it
+                clientsocket, clientaddr = self.serversocket.accept()
+                _thread.start_new_thread(
+                    self.processConnection, (clientsocket, clientaddr))
+
+                # if class have indication to stop processing stop looping
+                if self.enable is False:
+                    break
+            except KeyboardInterrupt:
+                logging.info("Closing server socket...")
+                break
+        self.serversocket.close()
+
+    def closeServer(self):
+        """ Stop server , close socket  """
+        logging.info("Closing server socket...")
+        self.enable = False
+        self.serversocket.close()
 
     def loadSIPdataDirectory(self, datafile="../data/regs"):
         """ Load json file for dictionnary
@@ -154,40 +188,6 @@ class SIPdirectorySrv:
             return self.dic_sipData[aor]
         except KeyError:
             return "\n"
-
-    def AcceptConnection(self, maxQueueConn=5):
-        """ Listen and wait connexion
-        Arguments:
-            maxQueueConn : Max connexion to queue
-        """
-
-        # become a server socket
-        self.serversocket.listen(maxQueueConn)
-
-        # Loop for every connexion and start thread to manage connexion
-        while True:
-            try:
-                # Log change server status
-                logging.info("Server is listening for connections\n")
-
-                # Accept connexion and start a thread to manage it
-                clientsocket, clientaddr = self.serversocket.accept()
-                _thread.start_new_thread(
-                    self.processConnection, (clientsocket, clientaddr))
-
-                # if class have indication to stop processing stop looping
-                if self.enable is False:
-                    break
-            except KeyboardInterrupt:
-                logging.info("Closing server socket...")
-                break
-        self.serversocket.close()
-
-    def closeServer(self):
-        """ Stop server , close socket  """
-        logging.info("Closing server socket...")
-        self.enable = False
-        self.serversocket.close()
 
 # END class SIPdirectorySrv:
 
