@@ -27,6 +27,19 @@ pipeline {
                     }
                 }
             }
+            stage('Test image from inside') {
+                steps {
+                    /* Ideally, we would run the unittest outside the img , but need identify
+                       dynamic ip Address. It will be in the next step issue #  */
+
+                    script {
+                        app.inside {
+                            sh 'python3 unittestSip.py --docker '
+                        }
+                    }
+                }
+            }
+
 
 
         } // END stages
