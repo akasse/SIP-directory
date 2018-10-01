@@ -34,7 +34,7 @@ pipeline {
 
                     script {
                         app.inside {
-                            sh 'python3 unittestSip.py --docker '
+                            sh ' ls /usr/local/app/ '
                         }
                     }
                 }
